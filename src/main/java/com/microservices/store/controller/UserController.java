@@ -1,6 +1,8 @@
 package com.microservices.store.controller;
 
 import com.microservices.store.dto.UserDTO;
+import com.microservices.store.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +15,9 @@ public class UserController {
 
 
     protected static final  List<UserDTO> users = new ArrayList<>();
+
+    @Autowired
+    private UserService userService;
 
     @PostConstruct
     public void initiateList() {
@@ -42,41 +47,29 @@ public class UserController {
         users.add(userDTO3);
     }
 
-    @GetMapping("/")
-    public String getMensagem(){
-        return "Spring boot is working";
+    @GetMapping("/user/{id}")
+    public UserDTO findById(@PathVariable Long id) {
+        return userService.findById(id);
+    }
+    @PostMapping("/user")
+    public UserDTO newUser(@RequestBody UserDTO userDTO) {
+        return userService.save(userDTO);
+    }
+    @GetMapping("/user/cpf/{cpf}")
+    public UserDTO findByCpf(@PathVariable String cpf) {
+        return userService.findByCpf(cpf);
+    }
+    @DeleteMapping("/user/{id}")
+    public UserDTO delete(@PathVariable Long id)
+            throws UserNotFoundException {
+        return userService.delete(id);
     }
 
-
-    @GetMapping("/users")
-    public List<UserDTO> getUsuarios(){ return users;}
-
-    @GetMapping("/users/{cpf}")
-    public UserDTO getUserFilter(@PathVariable String cpf){
-
-        for(UserDTO userFilter : users){
-            if(userFilter.getCpf().equals(cpf)){
-                return userFilter;
-            }
-        }
-        return null;
+    @GetMapping("/user/search")
+    public List<UserDTO> queryByName(
+            @RequestParam(name="nome", required = true)
+                    String nome) {
+        return userService.queryByName(nome);
     }
 
-    @PostMapping("/newUser")
-    public UserDTO save(@RequestBody UserDTO userDTO){
-        userDTO.setDataCadastro(new Date());
-        users.add(userDTO);
-        return userDTO;
-    }
-
-    @DeleteMapping("/users/{cpf}")
-    public Boolean deleteUser(@PathVariable String cpf){
-        for (UserDTO userFilter: users) {
-           if(userFilter.getCpf().equals(cpf)) {
-               users.remove(userFilter);
-               return true;
-           }
-        }
-        return false;
-    }
 }

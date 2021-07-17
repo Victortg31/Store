@@ -1,5 +1,7 @@
 package com.microservices.store.dto;
 
+import com.microservices.store.model.User;
+
 import java.util.Date;
 
 public class UserDTO {
@@ -10,6 +12,18 @@ public class UserDTO {
     private String email;
     private String telefone;
     private Date dataCadastro;
+
+    public static UserDTO convert(User user){
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setNome(user.getNome());
+        userDTO.setCpf(user.getCpf());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setTelefone(user.getTelefone());
+        userDTO.setDataCadastro(user.getDataCadastro());
+
+        return userDTO;
+    }
 
     public String getNome() {
         return nome;
